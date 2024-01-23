@@ -16,12 +16,24 @@ const initialLights = [
 
 export default function App({ Component, pageProps }) {
   const [lights, setLights] = useState(initialLights);
-  const [isDimmed, setIsDImmed] = useState(true);
+  const [allLightsOff, setAllLightsOff] = useState(null);
+  const [allLightsOn, setAllLightsOn] = useState(null);
   const litLights = lights.filter((light) => light.isOn === true);
 
   useEffect(() => {
-    litLights.length === 0 ? setIsDImmed(true) : setIsDImmed(false);
-  }, [litLights]);
+    if (litLights.length === 0) {
+      setAllLightsOff(true);
+      setAllLightsOn(false);
+      return;
+    }
+    if (litLights.length === lights.length) {
+      setAllLightsOff(false);
+      setAllLightsOn(true);
+      return;
+    }
+    setAllLightsOff(null);
+    setAllLightsOn(null);
+  }, [lights, litLights]);
 
   function handleToggleLight(id) {
     setLights(
@@ -48,9 +60,11 @@ export default function App({ Component, pageProps }) {
   }
 
   return (
-    <Layout isDimmed={isDimmed}>
+    <Layout isDimmed={allLightsOff}>
       <GlobalStyle />
       <Component
+        allLightsOff={allLightsOff}
+        allLightsOn={allLightsOn}
         litLights={litLights}
         onAllLightsOn={handleAllLightsOn}
         onAllLightsOff={handleAllLightsOff}
